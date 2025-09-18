@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="global.css">
+
+    <style>
+        /* Card styles - Mimicking Shadcn/ui Card component */
+        .card {
+            border-radius: 0.75rem; /* rounded-xl */
+            border: 1px solid #e5e7eb; /* border-gray-200 */
+            background-color: white;
+            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06); /* shadow-sm */
+        }
+        .card-header {
+            padding: 1.5rem; /* p-6 */
+        }
+        .card-title {
+            font-size: 1.25rem; /* text-xl */
+            font-weight: 600; /* font-semibold */
+        }
+        .card-content {
+            padding: 1.5rem; /* p-6 */
+            padding-top: 0;
+        }
+
+        /* Button styles */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 0.5rem; /* rounded-md */
+            font-weight: 500; /* font-medium */
+            transition: all 0.2s;
+            padding: 0.625rem 1rem; /* px-4 py-2.5 */
+        }
+        .btn-default {
+            background-color: #2563eb; /* blue-600 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); /* shadow-lg */
+        }
+        .btn-default:hover {
+            background-color: #1d4ed8; /* blue-700 */
+        }
+        .btn-outline {
+            background-color: transparent;
+            border-width: 1px;
+            border-color: #e5e7eb; /* border-gray-200 */
+        }
+        .btn-destructive {
+            background-color: #dc2626; /* red-600 */
+            color: white;
+        }
+        .btn-destructive:hover {
+            background-color: #b91c1c; /* red-700 */
+        }
+        .btn-sm {
+            padding: 0.5rem 0.75rem; /* px-3 py-2 */
+            height: auto;
+        }
+
+        /* Input and Textarea */
+        .input, .textarea {
+            width: 100%;
+            padding: 0.625rem 1rem;
+            border-radius: 0.5rem;
+            border: 1px solid #d1d5db; /* border-gray-300 */
+            background-color: white;
+            transition: border-color 0.2s;
+        }
+        .input:focus, .textarea:focus {
+            outline: none;
+            border-color: #3b82f6; /* ring-blue-500 */
+            box-shadow: 0 0 0 1px #3b82f6;
+        }
+        .label {
+            font-size: 0.875rem; /* text-sm */
+            font-weight: 500; /* font-medium */
+            color: #1f2937; /* text-gray-900 */
+        }
+
+        /* Switch styles */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+        .switch-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #e5e7eb; /* gray-200 */
+            transition: .4s;
+            border-radius: 34px;
+        }
+        .switch-slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 2px;
+            bottom: 2px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .switch-slider {
+            background-color: #2563eb; /* blue-600 */
+        }
+        input:checked + .switch-slider:before {
+            transform: translateX(20px);
+        }
+
+        /* Badge styles */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px; /* rounded-full */
+            padding: 0.25rem 0.75rem; /* px-3 py-1 */
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 500; /* font-medium */
+        }
+        .badge-outline {
+            background-color: transparent;
+            border: 1px solid #e5e7eb;
+            color: #6b7280; /* gray-600 */
+        }
+
+        /* Tabs styles */
+        .tabs-list {
+            display: flex;
+            background-color: #f3f4f6; /* gray-100 */
+            border-radius: 0.5rem; /* rounded-lg */
+            padding: 0.25rem; /* p-1 */
+        }
+        .tabs-trigger {
+            flex: 1;
+            padding: 0.75rem 1rem;
+            border-radius: 0.25rem;
+            font-weight: 500;
+            color: #6b7280; /* gray-500 */
+            transition: all 0.2s;
+        }
+        .tabs-trigger[data-state="active"] {
+            background-color: white;
+            color: #1f2937; /* gray-900 */
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        .tabs-content {
+            padding: 1rem 0;
+        }
+
+        @media (max-width: 767px) {
+            .tabs-list.grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .tabs-trigger.mobile-nav {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                gap: 0.25rem;
+                padding: 0.5rem 0.25rem;
+            }
+        }
+
+        .select-trigger {
+            padding: 0.5rem 1rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: white;
+            cursor: pointer;
+        }
+        .select-content {
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            background-color: white;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            margin-top: 0.5rem;
+        }
+        .select-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+        }
+        .select-item:hover {
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 font-sans antialiased">
+
+<div class="max-w-6xl mx-auto p-4 sm:p-6 lg:p-8">
+    <div id="settings-panel">
+        <div class="md:hidden">
+            <div id="mobile-tabs-container" class="sticky top-0 bg-white border-b border-gray-200 p-4 z-10">
+                <div id="main-tabs-list" class="grid w-full grid-cols-4 h-auto p-1 gap-1">
+                    </div>
+                <div id="secondary-tabs-list" class="flex gap-2 mt-3 overflow-x-auto pb-2">
+                    </div>
+            </div>
+
+            <div id="mobile-content-container" class="p-4">
+                </div>
+            
+            <div id="mobile-save-button" class="fixed bottom-6 left-4 right-4 z-20">
+                <button class="btn btn-default w-full">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 17 8"/></svg>
+                    Save Changes
+                </button>
+            </div>
+        </div>
+
+        <div class="hidden md:grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="card lg:col-span-1">
+                <div class="card-header">
+                    <h3 class="card-title flex items-center gap-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-600"><path d="M12.22 2h-.44a2 2 0 0 0-2 2.24l.55 3.3a2 2 0 0 1-.95 1.95L5.7 11.2a2 2 0 0 0-.62 2.45l2.42 4.16a2 2 0 0 0 1.84 1.13h2.32a2 2 0 0 1 1.66.9L17.7 22h.44a2 2 0 0 0 2-2.24l-.55-3.3a2 2 0 0 1 .95-1.95l3.29-2.73a2 2 0 0 0 .62-2.45l-2.42-4.16a2 2 0 0 0-1.84-1.13h-2.32a2 2 0 0 1-1.66-.9L12.22 2Z"/></svg>
+                        Settings
+                    </h3>
+                </div>
+                <div class="p-0">
+                    <nav id="desktop-nav" class="space-y-1">
+                        </nav>
+                </div>
+            </div>
+
+            <div class="card lg:col-span-3">
+                <div class="card-header">
+                    <h3 id="desktop-content-title" class="card-title capitalize"></h3>
+                </div>
+                <div class="card-content">
+                    <div id="desktop-content-panel">
+                        </div>
+                    
+                    <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+                        <button class="btn btn-outline">Cancel</button>
+                        <button class="btn btn-default">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 17 8"/></svg>
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const state = {
+        activeTab: 'profile',
+        selectedClass: 10,
+        profileData: {
+            name: 'Abhinav Banerjee',
+            email: 'abhinav.banerjee@student.cbse.edu.in',
+            phone: '+91 98765 43210',
+            school: 'Delhi Public School',
+            rollNumber: 'DPS2024-10A-042',
+            dateOfBirth: '2009-03-15',
+            parentName: 'Rajesh Banerjee',
+            parentPhone: '+91 98765 43211'
+        },
+        notifications: {
+            emailNotifications: true,
+            pushNotifications: true,
+            assignmentReminders: true,
+            testReminders: true,
+            progressReports: false,
+            weeklyDigest: true
+        },
+        studyPreferences: {
+            dailyStudyGoal: 120,
+            breakReminders: true,
+            difficultyLevel: 'medium',
+            studyStartTime: '16:00',
+            studyEndTime: '20:00',
+            weekendStudy: true
+        },
+        privacy: {
+            profileVisibility: 'friends',
+            shareProgress: true,
+            allowMessages: false,
+            showOnLeaderboard: true
+        }
+    };
+
+    const tabs = [
+        { id: 'profile', label: 'Profile', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>' },
+        { id: 'academic', label: 'Academic', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M22 17a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9.5C2 7 4 2 8 2h8c4 0 6 5 6 7.5z"/><path d="M15 10H7"/><path d="M12 15a4 4 0 0 0-4-4v4a4 4 0 0 0 4 4z"/></svg>' },
+        { id: 'notifications', label: 'Notifications', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>' },
+        { id: 'study', label: 'Study Preferences', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>' },
+        { id: 'privacy', label: 'Privacy', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 21a9 9 0 0 1-9-9c0-1.85.64-3.56 1.7-4.9S7.55 3.1 9 2.5a8.995 8.995 0 0 1 6 0c1.45.6 2.76 1.95 3.8 3.3S21 10.15 21 12a9 9 0 0 1-9 9z"/><path d="M8 12c.5 1 1.5 2 4 2s3.5-1 4-2"/></svg>' },
+        { id: 'display', label: 'Display', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 4v16"/><path d="M2.93 12h18.14"/></svg>' },
+        { id: 'account', label: 'Account', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12.22 2h-.44a2 2 0 0 0-2 2.24l.55 3.3a2 2 0 0 1-.95 1.95L5.7 11.2a2 2 0 0 0-.62 2.45l2.42 4.16a2 2 0 0 0 1.84 1.13h2.32a2 2 0 0 1 1.66.9L17.7 22h.44a2 2 0 0 0 2-2.24l-.55-3.3a2 2 0 0 1 .95-1.95l3.29-2.73a2 2 0 0 0 .62-2.45l-2.42-4.16a2 2 0 0 0-1.84-1.13h-2.32a2 2 0 0 1-1.66-.9L12.22 2Z"/></svg>' }
+    ];
+
+    const mobileSecondaryTabs = [
+        { id: 'privacy', label: 'Privacy', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12 21a9 9 0 0 1-9-9c0-1.85.64-3.56 1.7-4.9S7.55 3.1 9 2.5a8.995 8.995 0 0 1 6 0c1.45.6 2.76 1.95 3.8 3.3S21 10.15 21 12a9 9 0 0 1-9 9z"/><path d="M8 12c.5 1 1.5 2 4 2s3.5-1 4-2"/></svg>' },
+        { id: 'display', label: 'Display', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20z"/><path d="M12 4v16"/><path d="M2.93 12h18.14"/></svg>' },
+        { id: 'account', label: 'Account', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12.22 2h-.44a2 2 0 0 0-2 2.24l.55 3.3a2 2 0 0 1-.95 1.95L5.7 11.2a2 2 0 0 0-.62 2.45l2.42 4.16a2 2 0 0 0 1.84 1.13h2.32a2 2 0 0 1 1.66.9L17.7 22h.44a2 2 0 0 0 2-2.24l-.55-3.3a2 2 0 0 1 .95-1.95l3.29-2.73a2 2 0 0 0 .62-2.45l-2.42-4.16a2 2 0 0 0-1.84-1.13h-2.32a2 2 0 0 1-1.66-.9L12.22 2Z"/></svg>' }
+    ];
+
+    const getTabContent = (tabId) => {
+        switch (tabId) {
+            case 'profile':
+                return `
+                    <h3 class="card-title capitalize">Profile Settings</h3>
+                    <div class="space-y-6">
+                        <div class="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                            <div class="relative">
+                                <div class="w-20 h-20 rounded-full bg-blue-100 border-2 border-blue-200 flex items-center justify-center text-blue-700 text-xl font-medium">AB</div>
+                                <button class="btn btn-default absolute -bottom-2 -right-2 rounded-full w-8 h-8 p-0">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 12v3a7 7 0 0 1-14 0v-3"/><line x1="12" x2="12" y1="19" y2="22"/></svg>
+                                </button>
+                            </div>
+                            <div class="text-center sm:text-left">
+                                <h3 class="font-semibold text-gray-900">Profile Photo</h3>
+                                <p class="text-sm text-gray-600">Upload a clear photo for better recognition</p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label for="name" class="label">Full Name</label>
+                                <input id="name" type="text" value="${state.profileData.name}" class="input mt-1" />
+                            </div>
+                            <div>
+                                <label for="email" class="label">Email Address</label>
+                                <input id="email" type="email" value="${state.profileData.email}" class="input mt-1" />
+                            </div>
+                            <div>
+                                <label for="phone" class="label">Phone Number</label>
+                                <input id="phone" type="tel" value="${state.profileData.phone}" class="input mt-1" />
+                            </div>
+                            <div>
+                                <label for="dob" class="label">Date of Birth</label>
+                                <input id="dob" type="date" value="${state.profileData.dateOfBirth}" class="input mt-1" />
+                            </div>
+                            <div>
+                                <label for="school" class="label">School Name</label>
+                                <input id="school" type="text" value="${state.profileData.school}" class="input mt-1" />
+                            </div>
+                            <div>
+                                <label for="rollNumber" class="label">Roll Number</label>
+                                <input id="rollNumber" type="text" value="${state.profileData.rollNumber}" class="input mt-1" />
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="font-semibold text-gray-900 mb-4">Parent/Guardian Information</h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label for="parentName" class="label">Parent/Guardian Name</label>
+                                    <input id="parentName" type="text" value="${state.profileData.parentName}" class="input mt-1" />
+                                </div>
+                                <div>
+                                    <label for="parentPhone" class="label">Parent/Guardian Phone</label>
+                                    <input id="parentPhone" type="tel" value="${state.profileData.parentPhone}" class="input mt-1" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            case 'academic':
+                return `
+                    <h3 class="card-title capitalize">Academic Settings</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="label">Current Class</label>
+                            <div class="select-trigger w-full mt-1">
+                                <span>Class ${state.selectedClass}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="label">Stream (For Classes 11-12)</label>
+                            <div class="select-trigger w-full mt-1 ${state.selectedClass < 11 ? 'opacity-50 cursor-not-allowed' : ''}">
+                                <span>Select stream</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="label">Favorite Subjects</label>
+                            <div class="flex flex-wrap gap-2 mt-2">
+                                ${['Mathematics', 'Science', 'English', 'Hindi', 'Social Science', 'Computer Science'].map(subject => `
+                                    <span class="badge badge-outline cursor-pointer hover:bg-blue-50">
+                                        ${subject}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="label">Academic Goals</label>
+                            <textarea placeholder="e.g., Score 95% in board exams, improve in Mathematics..." class="textarea mt-2"></textarea>
+                        </div>
+                        
+                        <div>
+                            <label class="label">Board Exam Year</label>
+                            <div class="select-trigger w-full mt-1">
+                                <span>Select year</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            case 'notifications':
+                return `
+                    <h3 class="card-title capitalize">Notification Settings</h3>
+                    <div class="space-y-4">
+                        ${Object.entries({
+                            emailNotifications: 'Email Notifications',
+                            pushNotifications: 'Push Notifications',
+                            assignmentReminders: 'Assignment Reminders',
+                            testReminders: 'Test & Quiz Reminders',
+                            progressReports: 'Weekly Progress Reports',
+                            weeklyDigest: 'Weekly Study Digest'
+                        }).map(([key, label]) => `
+                            <div class="flex items-center justify-between py-3 border-b border-gray-100 last:border-b-0">
+                                <div class="flex-1 pr-4">
+                                    <label class="label block">${label}</label>
+                                    <p class="text-sm text-gray-600 mt-1">
+                                        ${key === 'emailNotifications' ? 'Receive notifications via email' : ''}
+                                        ${key === 'pushNotifications' ? 'Receive browser push notifications' : ''}
+                                        ${key === 'assignmentReminders' ? 'Get reminded about pending assignments' : ''}
+                                        ${key === 'testReminders' ? 'Get notified about upcoming tests' : ''}
+                                        ${key === 'progressReports' ? 'Receive weekly academic progress summary' : ''}
+                                        ${key === 'weeklyDigest' ? 'Get a summary of your week\'s activities' : ''}
+                                    </p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" ${state.notifications[key] ? 'checked' : ''}>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            case 'study':
+                return `
+                    <h3 class="card-title capitalize">Study Preferences</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="label">Daily Study Goal (minutes)</label>
+                            <input type="number" value="${state.studyPreferences.dailyStudyGoal}" class="input mt-1" />
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="label">Preferred Study Start Time</label>
+                                <input type="time" value="${state.studyPreferences.studyStartTime}" class="input mt-1" />
+                            </div>
+                            <div>
+                                <label class="label">Preferred Study End Time</label>
+                                <input type="time" value="${state.studyPreferences.studyEndTime}" class="input mt-1" />
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="label">Difficulty Level</label>
+                            <div class="select-trigger w-full mt-1">
+                                <span>${state.studyPreferences.difficultyLevel}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                <div>
+                                    <label class="label">Break Reminders</label>
+                                    <p class="text-sm text-gray-600">Get reminded to take breaks during study</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" ${state.studyPreferences.breakReminders ? 'checked' : ''}>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="flex items-center justify-between py-3">
+                                <div>
+                                    <label class="label">Weekend Study</label>
+                                    <p class="text-sm text-gray-600">Include weekends in study schedule</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" ${state.studyPreferences.weekendStudy ? 'checked' : ''}>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            case 'privacy':
+                return `
+                    <h3 class="card-title capitalize">Privacy Settings</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="label">Profile Visibility</label>
+                            <div class="select-trigger w-full mt-1">
+                                <span>${state.privacy.profileVisibility}</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                        </div>
+
+                        <div class="space-y-4">
+                            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                <div class="flex-1 pr-4">
+                                    <label class="label block">Share Progress with Parents</label>
+                                    <p class="text-sm text-gray-600 mt-1">Allow parents to view your academic progress</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" ${state.privacy.shareProgress ? 'checked' : ''}>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="flex items-center justify-between py-3 border-b border-gray-100">
+                                <div class="flex-1 pr-4">
+                                    <label class="label block">Allow Messages from Classmates</label>
+                                    <p class="text-sm text-gray-600 mt-1">Receive messages from other students</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" ${state.privacy.allowMessages ? 'checked' : ''}>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+
+                            <div class="flex items-center justify-between py-3">
+                                <div class="flex-1 pr-4">
+                                    <label class="label block">Show on Leaderboard</label>
+                                    <p class="text-sm text-gray-600 mt-1">Display your rank on class leaderboard</p>
+                                </div>
+                                <label class="switch">
+                                    <input type="checkbox" ${state.privacy.showOnLeaderboard ? 'checked' : ''}>
+                                    <span class="switch-slider"></span>
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            case 'display':
+                return `
+                    <h3 class="card-title capitalize">Display Settings</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <label class="label">Theme</label>
+                            <div class="select-trigger w-full mt-1">
+                                <span>Light Theme</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="label">Language</label>
+                            <div class="select-trigger w-full mt-1">
+                                <span>English</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="label">Timezone</label>
+                            <div class="select-trigger w-full mt-1">
+                                <span>India Standard Time (IST)</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="label">Date Format</label>
+                            <div class="select-trigger w-full mt-1">
+                                <span>DD-MM-YYYY</span>
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" /></svg>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            case 'account':
+                return `
+                    <h3 class="card-title capitalize">Account Settings</h3>
+                    <div class="space-y-6">
+                        <div>
+                            <h3 class="font-semibold text-gray-900 mb-4">Change Password</h3>
+                            <div class="space-y-4">
+                                <div>
+                                    <label for="current-password" class="label">Current Password</label>
+                                    <input id="current-password" type="password" class="input" />
+                                </div>
+                                <div>
+                                    <label for="new-password" class="label">New Password</label>
+                                    <input id="new-password" type="password" class="input" />
+                                </div>
+                                <div>
+                                    <label for="confirm-password" class="label">Confirm New Password</label>
+                                    <input id="confirm-password" type="password" class="input" />
+                                </div>
+                                <button class="btn btn-default">Update Password</button>
+                            </div>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="font-semibold text-gray-900 mb-4">Data Export</h3>
+                            <p class="text-sm text-gray-600 mb-4">
+                                Download your academic data including progress reports, test scores, and achievements.
+                            </p>
+                            <button class="btn btn-outline">Download My Data</button>
+                        </div>
+
+                        <div class="border-t border-gray-200 pt-6">
+                            <h3 class="font-semibold text-red-600 mb-4">Danger Zone</h3>
+                            <div class="space-y-4">
+                                <div class="border border-red-200 rounded-lg p-4 bg-red-50">
+                                    <h4 class="font-medium text-red-800 mb-2">Delete Account</h4>
+                                    <p class="text-sm text-red-600 mb-4">
+                                        Permanently delete your account and all associated data. This action cannot be undone.
+                                    </p>
+                                    <button class="btn btn-destructive btn-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 mr-2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                        Delete Account
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            default:
+                return 'Select a tab to view settings.';
+        }
+    };
+
+    const updateUI = () => {
+        const isMobile = window.innerWidth < 768;
+        const mobileContainer = document.querySelector('.md\\:hidden');
+        const desktopContainer = document.querySelector('.hidden.md\\:grid');
+        
+        if (isMobile) {
+            mobileContainer.style.display = 'block';
+            desktopContainer.style.display = 'none';
+
+            // Render mobile tabs
+            const mainTabsList = document.getElementById('main-tabs-list');
+            const secondaryTabsList = document.getElementById('secondary-tabs-list');
+            mainTabsList.innerHTML = '';
+            secondaryTabsList.innerHTML = '';
+
+            tabs.slice(0, 4).forEach(tab => {
+                const button = document.createElement('button');
+                button.className = `tabs-trigger mobile-nav text-xs py-2 px-1 ${state.activeTab === tab.id ? 'bg-blue-50' : ''}`;
+                button.setAttribute('data-state', state.activeTab === tab.id ? 'active' : 'inactive');
+                button.onclick = () => { state.activeTab = tab.id; updateUI(); };
+                button.innerHTML = `
+                    <div class="flex flex-col items-center gap-1">
+                        ${tab.icon}
+                        <span>${tab.label === 'Notifications' ? 'Alerts' : tab.label === 'Study Preferences' ? 'Study' : tab.label}</span>
+                    </div>
+                `;
+                mainTabsList.appendChild(button);
+            });
+
+            mobileSecondaryTabs.forEach(tab => {
+                const button = document.createElement('button');
+                button.className = `flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-colors ${
+                    state.activeTab === tab.id ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+                }`;
+                button.onclick = () => { state.activeTab = tab.id; updateUI(); };
+                button.innerHTML = `${tab.icon} ${tab.label}`;
+                secondaryTabsList.appendChild(button);
+            });
+            
+            // Render mobile content
+            document.getElementById('mobile-content-container').innerHTML = `
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title capitalize">
+                            ${tabs.find(tab => tab.id === state.activeTab)?.label} Settings
+                        </h3>
+                    </div>
+                    <div class="card-content">
+                        ${getTabContent(state.activeTab)}
+                    </div>
+                </div>
+            `;
+
+        } else {
+            mobileContainer.style.display = 'none';
+            desktopContainer.style.display = 'grid';
+            
+            // Render desktop nav
+            const desktopNav = document.getElementById('desktop-nav');
+            desktopNav.innerHTML = '';
+            tabs.forEach(tab => {
+                const button = document.createElement('button');
+                button.className = `w-full flex items-center gap-3 px-4 py-3 text-left transition-colors ${
+                    state.activeTab === tab.id
+                        ? 'bg-blue-50 text-blue-700 border-r-2 border-blue-600'
+                        : 'text-gray-700 hover:bg-gray-50'
+                }`;
+                button.onclick = () => { state.activeTab = tab.id; updateUI(); };
+                button.innerHTML = `
+                    ${tab.icon}
+                    <span class="text-sm">${tab.label}</span>
+                `;
+                desktopNav.appendChild(button);
+            });
+
+            // Render desktop content
+            document.getElementById('desktop-content-title').textContent = `${tabs.find(tab => tab.id === state.activeTab)?.label} Settings`;
+            document.getElementById('desktop-content-panel').innerHTML = getTabContent(state.activeTab);
+        }
+    };
+
+    window.addEventListener('resize', updateUI);
+    window.addEventListener('DOMContentLoaded', updateUI);
+
+</script>
+
+</body>
+</html>

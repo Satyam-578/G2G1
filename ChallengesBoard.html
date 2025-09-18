@@ -1,0 +1,69 @@
+<div class="rounded-lg border bg-white p-6 shadow-sm">
+    <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-red-600">
+            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm1 14h-2V7h2z"/>
+        </svg>
+        Active Challenges
+    </h3>
+    <div id="challenges-container" class="space-y-4">
+        <p class="text-gray-600">Loading challenges...</p>
+    </div>
+
+    <script>
+        // Data model for challenges (replace with real API data)
+        let challengesData = [
+            { id: 1, title: 'Maths Olympiad Prep', subject: 'Maths', progress: 65, goal: '10 lessons' },
+            { id: 2, title: 'Science Lab Simulation', subject: 'Physics', progress: 100, goal: 'Complete all steps' },
+            { id: 3, title: 'History Essay Draft', subject: 'History', progress: 30, goal: 'Finish draft' }
+        ];
+
+        function renderChallenges() {
+            const container = document.getElementById('challenges-container');
+            if (!container) return;
+
+            // Clear previous content
+            container.innerHTML = '';
+
+            if (challengesData.length === 0) {
+                container.innerHTML = '<p class="text-gray-600">No active challenges.</p>';
+                return;
+            }
+
+            challengesData.forEach(challenge => {
+                const isCompleted = challenge.progress >= 100;
+                const statusColor = isCompleted ? 'bg-green-600' : 'bg-blue-600';
+                const statusText = isCompleted ? 'Completed' : 'In Progress';
+                
+                const challengeHTML = `
+                <div class="border border-gray-200 p-4 rounded-lg">
+                    <div class="flex items-start justify-between mb-2">
+                        <div>
+                            <p class="font-semibold text-gray-900">${challenge.title}</p>
+                            <span class="text-xs text-gray-500">${challenge.subject} • Goal: ${challenge.goal}</span>
+                        </div>
+                        <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-medium ${isCompleted ? 'bg-green-100 text-green-800' : 'bg-blue-100 text-blue-800'}">
+                            ${statusText}
+                        </span>
+                    </div>
+                    
+                    <div class="space-y-2">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar ${statusColor}" style="width: ${challenge.progress}%;"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 flex justify-end">
+                        <button class="px-4 py-2 text-sm font-medium text-white ${statusColor} rounded-lg hover:opacity-90 transition-opacity">
+                            ${isCompleted ? 'View Results' : 'Continue'}
+                        </button>
+                    </div>
+                </div>
+                `;
+                container.insertAdjacentHTML('beforeend', challengeHTML);
+            });
+        }
+        
+        // Call the function immediately as the script runs when injected
+        renderChallenges();
+    </script>
+</div>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Continue Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* Optional style for wrapping the component in a card */
+        .card-container {
+            border-radius: 0.5rem;
+            background-color: white;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        
+        /* Custom styles for the progress bar structure */
+        .progress-bar-container {
+            position: relative;
+            width: 100%;
+            height: 8px;
+            background-color: #e5e7eb; /* gray-200 */
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%;
+            /* The color is set via a Tailwind class (bg-blue-500) in the HTML template */
+            transition: width 0.3s ease-in-out;
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-8">
+
+    <div class="max-w-xl mx-auto">
+        <div class="card-container p-6">
+            
+            <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-blue-600">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>
+                </svg>
+                Continue Learning
+            </h3>
+            <div id="courses-container" class="space-y-4">
+                <p class="text-gray-600">Loading courses...</p>
+            </div>
+            </div>
+    </div>
+
+    <script>
+        // Data model for courses (replace with real API data)
+        let coursesData = [
+            { id: 1, title: 'Chapter 3: Chemical Reactions', subject: 'Science', progress: 50 },
+            { id: 2, title: 'Quadratic Equations', subject: 'Maths', progress: 85 },
+            { id: 3, title: 'French Revolution (Lecture 4)', subject: 'History', progress: 10 }
+        ];
+
+        function renderCourses() {
+            const container = document.getElementById('courses-container');
+            if (!container) return;
+
+            // Clear previous content
+            container.innerHTML = '';
+
+            if (coursesData.length === 0) {
+                container.innerHTML = '<p class="text-gray-600">No lessons to continue. Start a new one!</p>';
+                return;
+            }
+
+            coursesData.forEach(course => {
+                const courseHTML = `
+                <div class="flex border border-gray-200 p-4 rounded-lg items-center hover:bg-gray-50 transition-colors cursor-pointer">
+                    <div class="flex-shrink-0 mr-4">
+                        <div class="w-12 h-12 bg-blue-500 text-white rounded-md flex items-center justify-center font-bold text-lg">
+                            ${course.subject.charAt(0)}
+                        </div>
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-semibold text-gray-900 truncate">${course.title}</p>
+                        <p class="text-sm text-gray-500">${course.subject}</p>
+                    </div>
+                    <div class="w-36 ml-4">
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-center">
+                                <span class="text-sm text-gray-700">Progress</span>
+                                <span class="text-sm font-medium text-gray-900">${course.progress}%</span>
+                            </div>
+                            <div class="progress-bar-container">
+                                <div class="progress-bar bg-blue-500" style="width: ${course.progress}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                `;
+                container.insertAdjacentHTML('beforeend', courseHTML);
+            });
+        }
+
+        // Execute the render function once the DOM is ready
+        document.addEventListener('DOMContentLoaded', renderCourses);
+    </script>
+</body>
+</html>

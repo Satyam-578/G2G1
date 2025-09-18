@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Overview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="global.css">
+
+    <style>
+        /*
+        Recreating the ShadCN/UI components with Tailwind CSS classes.
+        This provides a base for the styled components without needing a framework.
+        */
+        .card {
+            background-image: linear-gradient(to bottom right, #eff6ff, #f0fdf4); /* from-blue-50 to-green-50 */
+            border-width: 1px;
+            border-color: #bfdbfe; /* border-blue-200 */
+            border-radius: 0.5rem; /* rounded-lg */
+        }
+        .card-content {
+            padding: 1.5rem; /* p-6 */
+        }
+        .avatar {
+            width: 4rem; /* w-16 */
+            height: 4rem; /* h-16 */
+            border-width: 2px;
+            border-color: #bfdbfe; /* border-blue-200 */
+            border-radius: 9999px; /* rounded-full */
+        }
+        .avatar-fallback {
+            background-color: #dbeafe; /* bg-blue-100 */
+            color: #1d4ed8; /* text-blue-700 */
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 9999px; /* rounded-full */
+            padding-left: 0.75rem;
+            padding-right: 0.75rem;
+            padding-top: 0.125rem;
+            padding-bottom: 0.125rem;
+            font-size: 0.75rem; /* text-xs */
+            font-weight: 500;
+        }
+        .badge.secondary {
+            background-color: #dbeafe; /* bg-blue-100 */
+            color: #1d4ed8; /* text-blue-700 */
+        }
+        .progress {
+            width: 100%;
+            height: 0.5rem; /* h-2 */
+            background-color: #e5e7eb; /* gray-200 */
+            border-radius: 9999px;
+            overflow: hidden;
+        }
+        .progress-indicator {
+            height: 100%;
+            background-color: #2563eb; /* blue-600 */
+            transition: width 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 flex items-center justify-center p-8">
+
+    <div class="card max-w-2xl mx-auto w-full">
+        <div class="card-content">
+            <div class="flex items-center gap-4">
+                <div class="avatar">
+                    <div class="avatar-fallback">AB</div>
+                </div>
+                
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1">
+                        <h2 class="text-xl font-semibold text-gray-900">Abhinav Banerjee</h2>
+                        <div class="badge secondary">
+                            Class 10
+                        </div>
+                    </div>
+                    <p class="text-gray-600 mb-2">CBSE Student • Academic Year 2024-25</p>
+                    
+                    <div class="grid grid-cols-3 gap-4 mb-4">
+                        <div class="text-center">
+                            <div class="flex items-center justify-center gap-1 mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-blue-600">
+                                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/>
+                                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>
+                                </svg>
+                                <span class="text-lg font-semibold text-blue-700">0</span>
+                            </div>
+                            <p class="text-xs text-gray-600">Study Points</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="flex items-center justify-center gap-1 mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-yellow-600">
+                                    <path d="M11 15h2l-3-6H7z"/>
+                                    <path d="M12 21a9 9 0 0 0 9-9c0-5-4-9-9-9s-9 4-9 9a9 9 0 0 0 9 9z"/>
+                                    <path d="M8 12h8"/>
+                                </svg>
+                                <span class="text-lg font-semibold text-yellow-700">0</span>
+                            </div>
+                            <p class="text-xs text-gray-600">Achievements</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="flex items-center justify-center gap-1 mb-1">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 text-green-600">
+                                    <circle cx="12" cy="12" r="10"/>
+                                    <circle cx="12" cy="12" r="6"/>
+                                    <circle cx="12" cy="12" r="2"/>
+                                </svg>
+                                <span class="text-lg font-semibold text-green-700">0%</span>
+                            </div>
+                            <p class="text-xs text-gray-600">Syllabus</p>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="text-sm text-gray-700">Academic Progress</span>
+                            <span class="text-sm text-gray-600">0/100 XP</span>
+                        </div>
+                        <div class="progress">
+                            <div id="progress-bar" class="progress-indicator" style="width: 0%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // This script is optional but demonstrates how to dynamically update
+        // the progress bar value just like the original React component would.
+        document.addEventListener('DOMContentLoaded', () => {
+            const progressBar = document.getElementById('progress-bar');
+            const progressValue = 0; // The value from your data source
+            if (progressBar) {
+                progressBar.style.width = `${progressValue}%`;
+            }
+        });
+    </script>
+
+</body>
+</html>

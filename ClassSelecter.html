@@ -1,0 +1,56 @@
+<div class="rounded-lg border bg-white p-6 shadow-sm">
+    <h3 class="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-4">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 text-yellow-500">
+            <path d="M10 21H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3"/><path d="M14 3h3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-3"/><line x1="10" x2="14" y1="21" y2="21"/>
+        </svg>
+        Leaderboard Preview
+    </h3>
+    <div id="leaderboard-container" class="space-y-4">
+        <p class="text-gray-600">Loading leaderboard...</p>
+    </div>
+    <div class="mt-4 text-center">
+        <button class="text-sm font-medium text-indigo-600 hover:text-indigo-500">View Full Leaderboard →</button>
+    </div>
+
+    <script>
+        // Data model for top performers (replace with real API data)
+        let topPerformersData = [
+            { rank: 1, name: 'Priya Sharma', badge: 'Gold Star', class: '10A', points: 1540 },
+            { rank: 2, name: 'Rohan Verma', badge: 'Silver Star', class: '10C', points: 1200 },
+            { rank: 3, name: 'Anjali Singh', badge: 'Bronze Star', class: '10A', points: 980 }
+        ];
+
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboard-container');
+            if (!container) return;
+
+            // Clear previous content
+            container.innerHTML = '';
+            
+            topPerformersData.forEach(user => {
+                const badgeColor = user.rank === 1 ? 'bg-yellow-500' : user.rank === 2 ? 'bg-gray-400' : 'bg-amber-700';
+                
+                const userHTML = `
+                <div class="flex items-center gap-3 p-2 rounded-lg ${user.rank === 1 ? 'bg-yellow-50/50' : 'hover:bg-gray-50'}">
+                    <div class="w-8 h-8 rounded-full ${badgeColor} text-white flex items-center justify-center font-bold text-sm">
+                        ${user.rank}
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <p class="font-medium text-gray-900 truncate">${user.name}</p>
+                        <p class="text-sm text-gray-600">${user.badge} • ${user.class}</p>
+                    </div>
+                    
+                    <div class="text-right">
+                        <p class="font-semibold text-blue-700">${user.points.toLocaleString()}</p>
+                        <p class="text-xs text-gray-500">points</p>
+                    </div>
+                </div>
+                `;
+                container.insertAdjacentHTML('beforeend', userHTML);
+            });
+        }
+
+        // Call the function immediately
+        renderLeaderboard();
+    </script>
+</div>

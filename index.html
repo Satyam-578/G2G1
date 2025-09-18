@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>G2G Student Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <link rel="stylesheet" href="global.css">
+
+    <style>
+        /* Custom Styles for Navigation (to work with JS active state) */
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.625rem 0.75rem;
+            border-radius: 0.5rem;
+            transition-property: all;
+            transition-duration: 150ms;
+            text-align: left;
+            width: 100%;
+        }
+
+        .sidebar-item.active {
+            /* Using Tailwind colors directly here for simplicity, but a custom green-50/700 is good */
+            background-color: #ecfdf5; /* green-50 */
+            color: #047857; /* green-700 */
+            border: 1px solid #d1fae5; /* green-200 */
+        }
+
+        .sidebar-item.inactive {
+            color: #374151; /* gray-700 */
+        }
+        
+        .sidebar-item.inactive:hover {
+            background-color: #f9fafb; /* gray-50 */
+            color: #111827; /* gray-900 */
+        }
+
+        .mobile-nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 0.5rem 0.75rem;
+            text-align: center;
+            flex: 1;
+            transition-property: all;
+            transition-duration: 150ms;
+        }
+
+        .mobile-nav-item.active {
+            color: #047857; /* green-700 */
+        }
+
+        .mobile-nav-item.inactive {
+            color: #6b7280; /* gray-500 */
+        }
+        
+        .mobile-nav-item.inactive:hover {
+            color: #111827; /* gray-900 */
+        }
+
+        /* Set a default style for the class buttons, to be overridden by JS */
+        .class-selector-btn {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            transition: background-color 150ms;
+        }
+        .class-selector-btn:hover {
+            background-color: #4338ca; /* indigo-700 */
+        }
+        .class-selector-btn.active {
+            background-color: #10b981; /* green-600 */
+        }
+        .class-selector-btn.active:hover {
+            background-color: #059669; /* green-700 */
+        }
+    </style>
+</head>
+<body>
+
+    <div id="app-container" class="min-h-screen">
+        
+        <div id="login-page" class="min-h-screen flex items-center justify-center bg-gray-50 p-4">
+            <div class="w-full max-w-md bg-white rounded-xl shadow-2xl overflow-hidden md:max-w-4xl lg:max-w-md">
+                <div class="p-8">
+                    <div class="text-center mb-8">
+                        <svg class="mx-auto h-12 w-auto text-green-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253"/>
+                        </svg>
+                        <h2 class="mt-6 text-3xl font-extrabold text-gray-900">
+                            Sign in to your Student Account
+                        </h2>
+                    </div>
+                    <form id="login-form" class="space-y-6">
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+                            <input id="email" name="email" type="email" autocomplete="email" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" value="abhinav@example.com">
+                        </div>
+                        <div>
+                            <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+                            <input id="password" name="password" type="password" autocomplete="current-password" required class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-green-500 focus:border-green-500 sm:text-sm" value="password123">
+                        </div>
+                        <div>
+                            <button id="login-button" type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500">
+                                Sign In
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="dashboard" class="hidden lg:grid lg:grid-cols-[250px_1fr] min-h-screen bg-gray-50">
+            
+            <aside class="hidden lg:flex flex-col border-r border-gray-200 bg-white p-4">
+                <div class="flex items-center space-x-2 text-xl font-bold text-green-600 mb-6">
+                    <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5s3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18s-3.332.477-4.5 1.253"/>
+                    </svg>
+                    <span>G2G Dashboard</span>
+                </div>
+                
+                <nav id="desktop-menu-items-container" class="flex-1 space-y-1"></nav>
+
+                <div class="mt-auto pt-4 border-t border-gray-200">
+                    <div class="flex items-center space-x-3 mb-4">
+                        <div class="w-10 h-10 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold">
+                            AB
+                        </div>
+                        <div>
+                            <p class="text-sm font-medium text-gray-900">Abhinav B.</p>
+                            <p class="text-xs text-gray-500">Class <span id="current-class-desktop">10</span></p>
+                        </div>
+                    </div>
+                    <button id="desktop-logout-button" class="sidebar-item inactive">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/></svg>
+                        <span>Logout</span>
+                    </button>
+                </div>
+            </aside>
+
+            <main class="flex-1 overflow-y-auto pb-20 lg:pb-4">
+                <header class="bg-white shadow-sm sticky top-0 z-10 border-b border-gray-200">
+                    <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
+                        <h1 class="text-2xl font-bold text-gray-900">Dashboard</h1>
+                    </div>
+                </header>
+
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
+                    <div id="dashboard-content-container">
+                        
+                        <div id="overview-content" class="space-y-6">
+                            <h1 class="text-2xl font-bold text-gray-900">Overview</h1>
+                            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                <div id="continue-learning-widget" class="col-span-1 lg:col-span-2 bg-white rounded-lg shadow-md p-6"></div>
+                                <div id="challenges-widget" class="col-span-1 bg-white rounded-lg shadow-md p-6"></div>
+                                <div id="impact-meter-widget" class="col-span-1 bg-white rounded-lg shadow-md p-6"></div>
+                                <div id="leaderboard-preview-widget" class="col-span-1 lg:col-span-2 bg-white rounded-lg shadow-md p-6"></div>
+                            </div>
+                        </div>
+
+                        <div id="lessons-content" class="hidden space-y-6">
+                            <h1 class="text-2xl font-bold text-gray-900">Lessons (Class <span id="lessons-class-number">10</span>)</h1>
+                            <p class="text-gray-600">Detailed lesson plans and resources for the selected class.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                                    <h3 class="font-semibold text-gray-900 mb-2">Subject: Mathematics</h3>
+                                    <p class="text-sm text-gray-600">12 chapters, 48 topics. Current: Quadratic Equations.</p>
+                                    <button class="mt-4 text-sm font-medium text-blue-600 hover:text-blue-500">View Lessons →</button>
+                                </div>
+                                <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                                    <h3 class="font-semibold text-gray-900 mb-2">Subject: Science</h3>
+                                    <p class="text-sm text-gray-600">Physics, Chemistry, Biology modules. Current: Chemical Reactions.</p>
+                                    <button class="mt-4 text-sm font-medium text-blue-600 hover:text-blue-500">View Lessons →</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div id="courses-content" class="hidden space-y-6">
+                            <h1 class="text-2xl font-bold text-gray-900">Courses</h1>
+                            <div class="rounded-lg border bg-white p-6 shadow-sm">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Class to view courses</h3>
+                                <div class="flex gap-4">
+                                    <button class="class-selector-btn" data-class="9">Class 9</button>
+                                    <button class="class-selector-btn" data-class="10">Class 10</button>
+                                </div>
+                            </div>
+                            <p class="text-gray-600">Courses page content for the selected class.</p>
+                        </div>
+                        
+                        <div id="leaderboard-content" class="hidden space-y-6">
+                            <h1 class="text-2xl font-bold text-gray-900">Leaderboard (Class <span id="leaderboard-class-number">10</span>)</h1>
+                            <p class="text-gray-600">Full leaderboard ranking and details.</p>
+                            <div class="bg-white p-6 rounded-lg shadow-sm border border-gray-200">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Top 5 Students</h3>
+                                <ul class="space-y-3">
+                                    <li class="flex justify-between items-center text-gray-800"><span class="font-bold">1. Priya Sharma</span> <span class="text-green-600 font-semibold">1540 pts</span></li>
+                                    <li class="flex justify-between items-center text-gray-800"><span class="font-bold">2. Rohan Verma</span> <span class="text-green-600 font-semibold">1200 pts</span></li>
+                                    <li class="flex justify-between items-center text-gray-800"><span class="font-bold">3. Anjali Singh</span> <span class="text-green-600 font-semibold">980 pts</span></li>
+                                    <li class="flex justify-between items-center text-gray-800"><span>4. Akash K.</span> <span>850 pts</span></li>
+                                    <li class="flex justify-between items-center text-gray-800"><span>5. Neha P.</span> <span>790 pts</span></li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        <div id="progress-content" class="hidden space-y-6">
+                            <h1 class="text-2xl font-bold text-gray-900">Progress</h1>
+                            <p class="text-gray-600">Detailed subject and overall progress reports here.</p>
+                        </div>
+                        
+                        <div id="achievements-content" class="hidden space-y-6">
+                            <h1 class="text-2xl font-bold text-gray-900">Achievements</h1>
+                            <p class="text-gray-600">Badges and achievements yet to be earned.</p>
+                        </div>
+
+                        <div id="community-content" class="hidden space-y-6">
+                            <h1 class="text-2xl font-bold text-gray-900">Community</h1>
+                            <p class="text-gray-600">Community features coming soon...</p>
+                        </div>
+
+                        <div id="settings-content" class="hidden space-y-6">
+                            <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
+                            <div class="rounded-lg border bg-white p-6 shadow-sm">
+                                <h3 class="text-lg font-semibold text-gray-900 mb-4">Select Class</h3>
+                                <div class="flex gap-4">
+                                    <button class="class-selector-btn" data-class="9">Class 9</button>
+                                    <button class="class-selector-btn" data-class="10">Class 10</button>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </main>
+        </div>
+        
+        <div id="mobile-nav" class="fixed bottom-0 left-0 right-0 lg:hidden bg-white border-t border-gray-200">
+            <div id="mobile-menu-items-container" class="flex justify-around py-2"></div>
+        </div>
+
+    </div>
+
+    <script src="App.js"></script>
+
+</body>
+</html>
